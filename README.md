@@ -1,4 +1,4 @@
-# bus_app
+# WakeRide
 
 A new Flutter project.
 
