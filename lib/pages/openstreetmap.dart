@@ -19,9 +19,26 @@ class _OpenstreetmapScreenState extends State<OpenstreetmapScreen> {
   LatLng? _currentLocation;
   LatLng? _destination;
   List<LatLng> _route = [];
+  @override
+  void initState() {
+    super.initState();
+    _intializeLocation();
+  }
 
   Future<void> _intializeLocation() async {
-    if (!await _checktheRequestPermisssions()) return;
+    if (!await _checktheRequestPermissions()) return;
+
+    _location.onLocationChanged.listen((LocationData locationData) {
+      if (locationData.latitude != null && locationData.longitude != null) {
+        setState(() {
+          _currentLocation = LatLng(
+            locationData.latitude!,
+            locationData.longitude!,
+          );
+          isLoading = false;
+        });
+      }
+    });
   }
 
   Future<bool> _checktheRequestPermissions() async {
