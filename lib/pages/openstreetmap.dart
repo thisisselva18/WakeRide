@@ -30,6 +30,7 @@ class _OpenstreetmapScreenState extends State<OpenstreetmapScreen> {
       serviceEnabled = await _location.requestService();
       if (!serviceEnabled) return false;
     }
+
     PermissionStatus permissionGranted = await _location.hasPermission();
     if (permissionGranted == PermissionStatus.denied) {
       permissionGranted = await _location.requestPermission();
