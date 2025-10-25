@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import 'package:http/http.dart' as http;
@@ -77,7 +78,15 @@ class _OpenstreetmapScreenState extends State<OpenstreetmapScreen> {
       errorMessage('Failed to fetch route. Try again later');
     }
   }
-  
+
+  void _decodePolyline(String encodedPolyline){
+    PolylinePoints polylinePoints = PolylinePoints();
+    List<PointLatLng> decodedPoints = polylinePoints.decodePolyline(encodedPolyline);
+
+    setState(() {
+      _route = decodedPoints.map((point)=> LatLng(point.latitude, point.longitude)).toList();
+    });
+  }
 
   Future<bool> _checktheRequestPermissions() async {
     bool serviceEnabled = await _location.serviceEnabled();
