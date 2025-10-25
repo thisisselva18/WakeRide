@@ -3,6 +3,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
+import 'package:http/http.dart' as http;
 
 class OpenstreetmapScreen extends StatefulWidget {
   const OpenstreetmapScreen({super.key});
@@ -39,6 +40,14 @@ class _OpenstreetmapScreenState extends State<OpenstreetmapScreen> {
         });
       }
     });
+  }
+
+  Future<void> fetchCoordinatesPoint(String Location) async {
+    final url = Uri.parse(
+      "https://nominatim.openstreetmap.org/search?q=$location&format=json&limit=1",
+    );
+    final response = await http.get(url);
+    if (response.statusCode == 200) {}
   }
 
   Future<bool> _checktheRequestPermissions() async {
