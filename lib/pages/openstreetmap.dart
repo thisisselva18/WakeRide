@@ -42,13 +42,42 @@ class _OpenstreetmapScreenState extends State<OpenstreetmapScreen> {
     });
   }
 
-  Future<void> fetchCoordinatesPoint(String Location) async {
+  Future<void> fetchCoordinatesPoint(String location) async {
     final url = Uri.parse(
       "https://nominatim.openstreetmap.org/search?q=$location&format=json&limit=1",
     );
     final response = await http.get(url);
-    if (response.statusCode == 200) {}
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      if (data.isNotEmpty) {
+        final lat = double.parse(data[0]['lat']);
+        final lon = double.parse(data[0]['lon']);
+        setState(() {
+          _destination = LatLng(lat, lon);
+        });
+        await _fetchRoute();
+      } else {
+        errorMessage('Location not found. Please try another search.');
+      }
+    } else {
+      errorMessage('Failed to fetch location. Please try again later.')
+    }
   }
+
+  Future<void> fetchRoute() async {
+    if(_currentLocation == null || _destination == null) return;
+    final url = Uri.parse("http://router.project-osrm.org/route/v1/driving/"'${_currentLocation!.longitude},${_currentLocation!.latitude};''${_destination!.longitude},${_destination!.latitude}?overview=full&geometries=polyline');
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final geometry = data['routes'][0]['geometry'];
+      _decodePolyline(geometry);
+    }
+    else{
+      errorMessage('Failed to fetch route. Try again later');
+    }
+  }
+  
 
   Future<bool> _checktheRequestPermissions() async {
     bool serviceEnabled = await _location.serviceEnabled();
